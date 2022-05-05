@@ -1,5 +1,5 @@
-#ifndef GRAPH_DEBRUIJNGRAPHLOCKFREE_H
-#define GRAPH_DEBRUIJNGRAPHLOCKFREE_H
+#ifndef LFdBG_H
+#define LFdBG_H
 
 #include <atomic>
 #include <boost/pool/object_pool.hpp>
@@ -18,7 +18,7 @@ static const int T = 2;
 static const int G = 3;
 static const int N = 4;
 
-class DeBruijnGraphLockFree
+class LFdBG
 {
   private:
     struct Node
@@ -51,15 +51,15 @@ class DeBruijnGraphLockFree
     void delPool(long unsigned int i);
 
   public:
-    DeBruijnGraphLockFree(unsigned int              k,
+    LFdBG(unsigned int              k,
                           std::vector<std::string> &reads,
                           unsigned int              read_length,
                           unsigned int              genome_size,
                           int                       threads_for_assembly,
                           unsigned long long        table_size,
                           bool                      normalize = true);
-    ~DeBruijnGraphLockFree();
+    ~LFdBG();
     std::deque<std::string>  getContigs();
     std::vector<std::string> getGraph(bool withEdges);
 };
-#endif // GRAPH_DEBRUIJNGRAPHLOCKFREE_H
+#endif // LFdBG_H

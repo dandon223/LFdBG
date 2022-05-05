@@ -4,8 +4,8 @@
 #include <vector>
 #include <iostream>
 #include <thread>
-#include "../include/DeBruijnGraphLockFree.h"
-#include "../src/DeBruijnGraphLockFree.cpp"
+#include "../include/LFdBG.h"
+#include "../src/LFdBG.cpp"
 bool findMer(std::vector<std::string>& kmers, std::string mer){
     for(auto kmer :kmers)
         if(kmer == mer)
@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE( kmers)
 {
     std::vector<std::string> reads;
     reads.push_back("ACTGACCTGG");
-    DeBruijnGraphLockFree d = DeBruijnGraphLockFree(6,reads,10,10,1,100,false);
+    LFdBG d = LFdBG(6,reads,10,10,1,100,false);
     auto vertices = d.getGraph(false);
     BOOST_ASSERT(findMer(vertices,"ACTGA"));
     BOOST_ASSERT(findMer(vertices,"CTGAC"));
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE( weights )
 {
     std::vector<std::string> reads;
     reads.push_back("ACTGACCTGG");
-    DeBruijnGraphLockFree d = DeBruijnGraphLockFree(6,reads,10,10,1,100,false);
+    LFdBG d = LFdBG(6,reads,10,10,1,100,false);
     auto vertices = d.getGraph(true);
     BOOST_ASSERT(findMer(vertices,"GACCT 0 0 0 1"));
     BOOST_ASSERT(findMer(vertices,"CTGAC 0 1 0 0"));
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( weights_2 )
     std::vector<std::string> reads;
     reads.push_back("ACTGACCTGG");
     reads.push_back("ACTGACCTGG");
-    DeBruijnGraphLockFree d = DeBruijnGraphLockFree(6,reads,10,10,1,100,false);
+    LFdBG d = LFdBG(6,reads,10,10,1,100,false);
     auto vertices = d.getGraph(true);
     BOOST_ASSERT(findMer(vertices,"GACCT 0 0 0 2"));
     BOOST_ASSERT(findMer(vertices,"CTGAC 0 2 0 0"));
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( weights_many_threads)
     reads.push_back("ACTGACCTGG");
     reads.push_back("ACTGACCTGG");
     reads.push_back("ACTGACCTGG");
-    DeBruijnGraphLockFree d = DeBruijnGraphLockFree(6,reads,10,10,4,1,false);
+    LFdBG d = LFdBG(6,reads,10,10,4,1,false);
     auto vertices = d.getGraph(true);
     BOOST_ASSERT(findMer(vertices,"GACCT 0 0 0 4"));
     BOOST_ASSERT(findMer(vertices,"CTGAC 0 4 0 0"));
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( contigs )
 {
     std::vector<std::string> reads;
     reads.push_back("ACTGACCTGG");
-    DeBruijnGraphLockFree d = DeBruijnGraphLockFree(6,reads,10,10,1,100);
+    LFdBG d = LFdBG(6,reads,10,10,1,100);
     auto contigs = d.getContigs();
     for(auto contig : contigs)
         BOOST_ASSERT(reads[0].find(contig,0) != std::string::npos);

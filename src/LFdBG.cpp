@@ -1,4 +1,4 @@
-#include "../include/DeBruijnGraphLockFree.h"
+#include "../include/LFdBG.h"
 
 // This method converts 0 to 'A', 1 to 'C', 2 to 'T' and 3 to 'G'.
 inline char getChar(int i) {
@@ -23,7 +23,7 @@ static const int NO_NEXT_NODES   = -2; // used in onlyOnePath
 static const int MANY_NEXT_NODES = -1; // used in onlyOnePath
 
 // This method checks if node has only one outgoing path.
-int DeBruijnGraphLockFree::Node::onlyOnePath() const {
+int LFdBG::Node::onlyOnePath() const {
     if (counters[A] == 0 && counters[C] == 0 && counters[T] == 0 && counters[G] == 0)
         return NO_NEXT_NODES;
     if (counters[A] > 0 && counters[C] == 0 && counters[T] == 0 && counters[G] == 0)
@@ -37,18 +37,18 @@ int DeBruijnGraphLockFree::Node::onlyOnePath() const {
     return MANY_NEXT_NODES;
 }
 
-DeBruijnGraphLockFree::~DeBruijnGraphLockFree() {
+LFdBG::~LFdBG() {
     std::vector<std::thread> threads;
     for (long unsigned int i = 0; i < object_pools.size(); ++i)
-        threads.emplace_back(&DeBruijnGraphLockFree::delPool, this, i);
+        threads.emplace_back(&LFdBG::delPool, this, i);
     for (long unsigned int i = 0; i < object_pools.size(); ++i)
         threads[i].join();
 }
-void DeBruijnGraphLockFree::delPool(long unsigned int i) {
+void LFdBG::delPool(long unsigned int i) {
     delete object_pools[i];
 }
 // The constructor also makes graph.
-DeBruijnGraphLockFree::DeBruijnGraphLockFree(unsigned int              k,
+LFdBG::LFdBG(unsigned int              k,
                                              std::vector<std::string> &reads,
                                              unsigned int              read_length,
                                              unsigned int              genome_size,
@@ -76,9 +76,9 @@ DeBruijnGraphLockFree::DeBruijnGraphLockFree(unsigned int              k,
     for (int i = 0; i < threads_for_assembly; ++i) {
         if (i == threads_for_assembly - 1) {
             threads.emplace_back(
-                &DeBruijnGraphLockFree::makeGraph, this, reads.begin() + i * for_one_thread, reads.end(), i);
+                &LFdBG::makeGraph, this, reads.begin() + i * for_one_thread, reads.end(), i);
         } else {
-            threads.emplace_back(&DeBruijnGraphLockFree::makeGraph,
+            threads.emplace_back(&LFdBG::makeGraph,
                                  this,
                                  reads.begin() + i * for_one_thread,
                                  reads.begin() + (i + 1) * for_one_thread,
@@ -96,10 +96,10 @@ DeBruijnGraphLockFree::DeBruijnGraphLockFree(unsigned int              k,
 
     for (int i = 0; i < threads_for_assembly; ++i) {
         if (i == threads_for_assembly - 1) {
-            threads2.emplace_back(&DeBruijnGraphLockFree::normalizeGraph, this, i * for_one_thread, table_size);
+            threads2.emplace_back(&LFdBG::normalizeGraph, this, i * for_one_thread, table_size);
         } else {
             threads2.emplace_back(
-                &DeBruijnGraphLockFree::normalizeGraph, this, i * for_one_thread, (i + 1) * for_one_thread);
+                &LFdBG::normalizeGraph, this, i * for_one_thread, (i + 1) * for_one_thread);
         }
     }
 
@@ -108,7 +108,7 @@ DeBruijnGraphLockFree::DeBruijnGraphLockFree(unsigned int              k,
 }
 
 // This method is main method to make graph.
-void DeBruijnGraphLockFree::makeGraph(std::vector<std::string>::iterator begin,
+void LFdBG::makeGraph(std::vector<std::string>::iterator begin,
                                       std::vector<std::string>::iterator end,
                                       int                                index) {
 
@@ -194,7 +194,7 @@ void DeBruijnGraphLockFree::makeGraph(std::vector<std::string>::iterator begin,
     }
 }
 // This method makes contigs from graph that was created.
-void DeBruijnGraphLockFree::findContigs(unsigned int start, unsigned int end, long unsigned int index) {
+void LFdBG::findContigs(unsigned int start, unsigned int end, long unsigned int index) {
     for (unsigned int i = start; i != end; i++) {
         if (hash_table[i] == nullptr)
             continue;
@@ -207,7 +207,7 @@ void DeBruijnGraphLockFree::findContigs(unsigned int start, unsigned int end, lo
     }
 }
 // This method creates contig starting from node.
-void DeBruijnGraphLockFree::findContig(Node *node, const unsigned int &index) {
+void LFdBG::findContig(Node *node, const unsigned int &index) {
     if (node->onlyOnePath() == MANY_NEXT_NODES) {
         if (node->counters[A] > 0) {
             makePath(node->pointers[A], index);
@@ -229,7 +229,7 @@ void DeBruijnGraphLockFree::findContig(Node *node, const unsigned int &index) {
         makePath(node, index);
     }
 }
-void DeBruijnGraphLockFree::makePath(Node *n, const unsigned int &index) {
+void LFdBG::makePath(Node *n, const unsigned int &index) {
     Node       *node = n;
     std::string contig;
     contig = node->k_mer;
@@ -249,7 +249,7 @@ void DeBruijnGraphLockFree::makePath(Node *n, const unsigned int &index) {
 // This method normalizes our created graph.
 // In our implementation, counter is set to one when dividing counter by weight gives as number in range from 0.1
 // exclusive to 1.5 exclusive.
-void DeBruijnGraphLockFree::normalizeGraph(unsigned int start, unsigned int end) {
+void LFdBG::normalizeGraph(unsigned int start, unsigned int end) {
     if (redundancy < 1)
         return;
 
@@ -286,7 +286,7 @@ void DeBruijnGraphLockFree::normalizeGraph(unsigned int start, unsigned int end)
 }
 
 // This method returns found contigs.
-std::deque<std::string> DeBruijnGraphLockFree::getContigs() {
+std::deque<std::string> LFdBG::getContigs() {
     if (already_searched)
         return contigs;
 
@@ -295,10 +295,10 @@ std::deque<std::string> DeBruijnGraphLockFree::getContigs() {
 
     for (int i = 0; i < threads_for_assembly; ++i) {
         if (i == threads_for_assembly - 1) {
-            threads2.emplace_back(&DeBruijnGraphLockFree::findContigs, this, i * for_one_thread, table_size, i);
+            threads2.emplace_back(&LFdBG::findContigs, this, i * for_one_thread, table_size, i);
         } else {
             threads2.emplace_back(
-                &DeBruijnGraphLockFree::findContigs, this, i * for_one_thread, (i + 1) * for_one_thread, i);
+                &LFdBG::findContigs, this, i * for_one_thread, (i + 1) * for_one_thread, i);
         }
     }
 
@@ -315,7 +315,7 @@ std::deque<std::string> DeBruijnGraphLockFree::getContigs() {
     }
     return contigs;
 }
-std::vector<std::string> DeBruijnGraphLockFree::getGraph(bool withEdges) {
+std::vector<std::string> LFdBG::getGraph(bool withEdges) {
     std::vector<std::string> graph;
     for (unsigned int i = 0; i < table_size; i++) {
         if (hash_table[i] == nullptr)
