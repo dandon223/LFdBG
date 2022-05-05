@@ -28,6 +28,8 @@ The LFdBG class provides two public methods:
 
 * The getGraph method returns the graph as a set of all created nodes with their mers as a series of strings. If we also want to obtain weights, we must pass the boolean value true as a parameter of the method.
 
+Example of usage can be find in unitTests.cpp file under the tests folder.
+
 ## Licence
 This library with source codes is available under MIT license.
 
