@@ -49,12 +49,12 @@ void LFdBG::delPool(long unsigned int i) {
 }
 // The constructor also makes graph.
 LFdBG::LFdBG(unsigned int              k,
-                                             std::vector<std::string> &reads,
-                                             unsigned int              read_length,
-                                             unsigned int              genome_size,
-                                             int                       t_f_a,
-                                             unsigned long long        t_s,
-                                             bool                      normalize) :
+             std::vector<std::string> &reads,
+             unsigned int              read_length,
+             unsigned int              genome_size,
+             int                       t_f_a,
+             unsigned long long        t_s,
+             bool                      normalize) :
     table_size(t_s),
     k_mer(k), redundancy(double(reads.size()) * double(read_length - k_mer + 1) / genome_size),
     threads_for_assembly(t_f_a) {
@@ -75,8 +75,7 @@ LFdBG::LFdBG(unsigned int              k,
     // Every thread gets its share of reads to work on.
     for (int i = 0; i < threads_for_assembly; ++i) {
         if (i == threads_for_assembly - 1) {
-            threads.emplace_back(
-                &LFdBG::makeGraph, this, reads.begin() + i * for_one_thread, reads.end(), i);
+            threads.emplace_back(&LFdBG::makeGraph, this, reads.begin() + i * for_one_thread, reads.end(), i);
         } else {
             threads.emplace_back(&LFdBG::makeGraph,
                                  this,
@@ -88,7 +87,7 @@ LFdBG::LFdBG(unsigned int              k,
 
     for (int i = 0; i < threads_for_assembly; ++i)
         threads[i].join();
-    if(!normalize)
+    if (!normalize)
         return;
 
     for_one_thread = table_size / threads_for_assembly;
@@ -98,8 +97,7 @@ LFdBG::LFdBG(unsigned int              k,
         if (i == threads_for_assembly - 1) {
             threads2.emplace_back(&LFdBG::normalizeGraph, this, i * for_one_thread, table_size);
         } else {
-            threads2.emplace_back(
-                &LFdBG::normalizeGraph, this, i * for_one_thread, (i + 1) * for_one_thread);
+            threads2.emplace_back(&LFdBG::normalizeGraph, this, i * for_one_thread, (i + 1) * for_one_thread);
         }
     }
 
@@ -108,9 +106,7 @@ LFdBG::LFdBG(unsigned int              k,
 }
 
 // This method is main method to make graph.
-void LFdBG::makeGraph(std::vector<std::string>::iterator begin,
-                                      std::vector<std::string>::iterator end,
-                                      int                                index) {
+void LFdBG::makeGraph(std::vector<std::string>::iterator begin, std::vector<std::string>::iterator end, int index) {
 
     std::hash<std::string_view> hasher;
     Node                       *left_new_node  = nullptr;
@@ -297,8 +293,7 @@ std::deque<std::string> LFdBG::getContigs() {
         if (i == threads_for_assembly - 1) {
             threads2.emplace_back(&LFdBG::findContigs, this, i * for_one_thread, table_size, i);
         } else {
-            threads2.emplace_back(
-                &LFdBG::findContigs, this, i * for_one_thread, (i + 1) * for_one_thread, i);
+            threads2.emplace_back(&LFdBG::findContigs, this, i * for_one_thread, (i + 1) * for_one_thread, i);
         }
     }
 

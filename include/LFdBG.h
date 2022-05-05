@@ -5,7 +5,6 @@
 #include <boost/pool/object_pool.hpp>
 #include <cmath>
 #include <deque>
-#include <iostream>
 #include <queue>
 #include <string>
 #include <string_view>
@@ -52,12 +51,12 @@ class LFdBG
 
   public:
     LFdBG(unsigned int              k,
-                          std::vector<std::string> &reads,
-                          unsigned int              read_length,
-                          unsigned int              genome_size,
-                          int                       threads_for_assembly,
-                          unsigned long long        table_size,
-                          bool                      normalize = true);
+          std::vector<std::string> &reads,
+          unsigned int              read_length,
+          unsigned int              genome_size,
+          int                       threads_for_assembly,
+          unsigned long long        table_size,
+          bool                      normalize = true);
     ~LFdBG();
     std::deque<std::string>  getContigs();
     std::vector<std::string> getGraph(bool withEdges);
