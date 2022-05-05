@@ -1,3 +1,0 @@
-/home/test/Desktop/lfdbg/tests/build/CMakeFiles/rebuild_cache.dir
-/home/test/Desktop/lfdbg/tests/build/CMakeFiles/edit_cache.dir
-/home/test/Desktop/lfdbg/tests/build/CMakeFiles/tests.dir
