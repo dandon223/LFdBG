@@ -28,7 +28,23 @@ The LFdBG class provides two public methods:
 
 * The getGraph method returns the graph as a set of all created nodes with their mers as a series of strings. If we also want to obtain weights, we must pass the boolean value true as a parameter of the method.
 
-Example of usage can be find in unitTests.cpp file under the tests folder.
+Example of usage with parameters:
+* k=6
+* average read length = 200
+* approximate genome size = 1000000
+* number of threads = 4
+* table size = 4000000
+* normalization = true (default value)
+
+Code:
+
+    #include "LFdBG.h"
+    LFdBG d = LFdBG(6, reads, 200, 1000000, 4, 4000000);
+    auto contigs = d.getContigs();
+
+When we do not know size of a genome we can switch off normalization step of the algorithm by adding false as a last parameter.
+
+Other examples can be found in unitTests.cpp file under the tests folder.
 
 ## Licence
 This library with source codes is available under MIT license.
