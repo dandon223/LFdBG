@@ -11,7 +11,7 @@ LFdBG is fast and easy to work with C++ library that uses Lock-Free structures f
 
 ## Installation
 
-For the library to work properly it needs Boost library to be installed on the computer. On linux it can be isntalled with this command.
+For the library to work properly it needs Boost library to be installed on the computer. On linux it can be installed with this command.
 
     sudo apt-get install libboost-all-dev
 This library needs version 11 of C++, because of std::atomic.
